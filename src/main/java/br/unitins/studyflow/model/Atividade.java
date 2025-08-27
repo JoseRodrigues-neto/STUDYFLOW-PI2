@@ -1,10 +1,13 @@
 package br.unitins.studyflow.model;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -20,6 +23,9 @@ public class Atividade extends DefaultEntity{
 
     @Enumerated(EnumType.STRING)
     private StatusAtividade status;
+
+    @OneToMany(mappedBy = "atividade", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Anotacao> anotacoes;
 
     public String getTitulo() {
         return titulo;
@@ -61,5 +67,11 @@ public class Atividade extends DefaultEntity{
         this.status = status;
     }
 
-    
+    public List<Anotacao> getAnotacoes() {
+        return anotacoes;
+    }
+
+    public void setAnotacoes(List<Anotacao> anotacoes) {
+        this.anotacoes = anotacoes;
+    }
 }

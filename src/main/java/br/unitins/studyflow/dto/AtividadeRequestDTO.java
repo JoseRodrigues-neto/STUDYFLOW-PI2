@@ -6,8 +6,8 @@ public record AtividadeRequestDTO (
     String titulo,
     String descricao,
     LocalDate dataInicio,
-    LocalDate dataFim,
-    Long roadmapId
+    LocalDate dataFim
+    // Long roadmapId
 ) {
     
 }
