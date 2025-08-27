@@ -30,8 +30,7 @@ public class FirebaseAuthFilter implements ContainerRequestFilter {
     static {
         try {
            //arrumar esse rota futuramemte 
-            FileInputStream serviceAccount = new FileInputStream("C:\\Users\\n" +  
-                    "eto\\Desktop\\6periodo\\STUDYFLOW-PI2\\src\\main\\resources\\firebaseKey\\fire-flow-6aa0c-firebase-adminsdk-fbsvc-c12238b247.json");
+            FileInputStream serviceAccount = new FileInputStream("C:\\key\\fire-flow-6aa0c-firebase-adminsdk-fbsvc-c12238b247.json");
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
