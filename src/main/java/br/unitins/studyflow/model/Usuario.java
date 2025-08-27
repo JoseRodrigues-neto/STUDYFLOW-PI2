@@ -4,21 +4,25 @@ import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "usuario")
-public class Usuario extends DefaultEntity {
+public class Usuario  {
+ 
+     @Id
+    private String uid;
 
+
+    // adicionar id novamente 
   
     @Column(name = "nome")
     private String nome;
 
     @Column(name = "email", unique = true)
     private String email;
- 
-    @Column(name = "senha")
-    private String senha;
+
  
     @Column(name = "data_nascimento")
     private LocalDate dataNascimento;
@@ -29,7 +33,7 @@ public class Usuario extends DefaultEntity {
     public Usuario() {
     }
 
-    public Usuario(String nome, String email, String senha,LocalDate dataNacimento, String tipoPerfil) {
+    public Usuario(String nome, String email,LocalDate dataNacimento, String tipoPerfil) {
         this.nome = nome;
        this.dataNascimento = dataNacimento;
         this.email = email;
@@ -56,13 +60,6 @@ public class Usuario extends DefaultEntity {
         return dataNascimento;
     }
     
-   public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
-    }
 
     public void setDataNascimento(LocalDate dataNascimento) {
         this.dataNascimento = dataNascimento;
@@ -84,6 +81,14 @@ public class Usuario extends DefaultEntity {
                ", email='" + email + '\'' +
                ", tipoPerfil='" + tipoPerfil + '\'' +
                '}';
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
   

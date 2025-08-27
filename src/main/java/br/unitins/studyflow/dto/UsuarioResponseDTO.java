@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import br.unitins.studyflow.model.Usuario;
 
 public record UsuarioResponseDTO(
-    Long id,
+    String uid,
     String nome,
     String email,
     LocalDate dataNascimento,
@@ -13,7 +13,7 @@ public record UsuarioResponseDTO(
 ) {
     public static UsuarioResponseDTO valueOf(Usuario usuario) {
         return new UsuarioResponseDTO(
-            usuario.getId(),
+            usuario.getUid(),
             usuario.getNome(),
             usuario.getEmail(),
             usuario.getDataNascimento(),

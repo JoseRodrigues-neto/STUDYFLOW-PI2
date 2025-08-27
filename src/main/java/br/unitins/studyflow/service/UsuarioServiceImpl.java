@@ -19,27 +19,28 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Transactional
     @Override
-    public UsuarioResponseDTO cadastrar(UsuarioRequestDTO usuarioDTO) {
+    public UsuarioResponseDTO cadastrar(String uid, UsuarioRequestDTO usuarioDTO) {
         Usuario novoUsuario = new Usuario();
+        novoUsuario.setUid(uid);  
         novoUsuario.setNome(usuarioDTO.nome());
         novoUsuario.setEmail(usuarioDTO.email());
-        novoUsuario.setSenha(usuarioDTO.senha());
         novoUsuario.setDataNascimento(usuarioDTO.dataNascimento());
         novoUsuario.setTipoPerfil(usuarioDTO.tipoPerfil());
 
         repository.persist(novoUsuario);
         return UsuarioResponseDTO.valueOf(novoUsuario);
     }
-    
+
     @Override
     public List<UsuarioResponseDTO> buscarTodos() {
         return repository.listAll().stream()
                 .map(UsuarioResponseDTO::valueOf)
                 .collect(Collectors.toList());
     }
+
     @Override
-    public UsuarioResponseDTO buscarPorId(Long id) {
-        Usuario usuario = repository.findById(id);
+    public UsuarioResponseDTO buscarPorId(String uid) {
+        Usuario usuario = repository.find("uid", uid).firstResult();
         if (usuario == null) {
             return null;
         }
@@ -48,8 +49,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Transactional
     @Override
-    public UsuarioResponseDTO atualizar(Long id, UsuarioRequestDTO usuarioDTO) {
-        Usuario usuario = repository.findById(id);
+    public UsuarioResponseDTO atualizar(String uid, UsuarioRequestDTO usuarioDTO) {
+        Usuario usuario = repository.find("uid", uid).firstResult();
         if (usuario == null) {
             return null;
         }
@@ -58,18 +59,15 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setEmail(usuarioDTO.email());
         usuario.setDataNascimento(usuarioDTO.dataNascimento());
         usuario.setTipoPerfil(usuarioDTO.tipoPerfil());
-        
-        if (usuarioDTO.senha() != null && !usuarioDTO.senha().isEmpty()) {
-            usuario.setSenha(usuarioDTO.senha());
-        }
 
+       
         repository.persist(usuario);
         return UsuarioResponseDTO.valueOf(usuario);
     }
 
     @Transactional
     @Override
-    public boolean excluir(Long id) {
-        return repository.deleteById(id);
+    public boolean excluir(String uid) {
+        return repository.delete("uid", uid) > 0;
     }
 }

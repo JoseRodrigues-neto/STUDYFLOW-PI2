@@ -6,15 +6,15 @@ import br.unitins.studyflow.dto.UsuarioRequestDTO;
 import br.unitins.studyflow.dto.UsuarioResponseDTO;
 
 public interface UsuarioService {
-    
-    public UsuarioResponseDTO cadastrar(UsuarioRequestDTO usuarioDTO);
-    
+
+    public UsuarioResponseDTO cadastrar(String uid, UsuarioRequestDTO usuarioDTO);
+
     public List<UsuarioResponseDTO> buscarTodos();
     
-    public UsuarioResponseDTO buscarPorId(Long id);
+    public UsuarioResponseDTO buscarPorId(String uid);
     
-    public UsuarioResponseDTO atualizar(Long id, UsuarioRequestDTO usuarioDTO);
+    public UsuarioResponseDTO atualizar(String uid, UsuarioRequestDTO usuarioDTO);
     
-    public boolean excluir(Long id);
+    public boolean excluir(String uid);
     
 }
