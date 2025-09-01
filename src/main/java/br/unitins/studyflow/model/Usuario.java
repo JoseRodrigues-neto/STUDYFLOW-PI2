@@ -4,18 +4,14 @@ import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "usuario")
-public class Usuario  {
- 
-     @Id
+public class Usuario extends DefaultEntity  {
+
+    @Column(unique = true, nullable = false, length = 128)// id do usuario do firebase
     private String uid;
-
-
-    // adicionar id novamente 
   
     @Column(name = "nome")
     private String nome;
