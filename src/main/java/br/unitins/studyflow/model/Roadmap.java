@@ -1,18 +1,18 @@
 package br.unitins.studyflow.model;
 
-import java.util.List;
-
 import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "roadmap")
-public class Roadmap {
+public class Roadmap extends DefaultEntity {
 
     private String nome;
     private String descricao;
     private String nota;
+
+    @ManyToOne
     private Atividade atividade;
 
     public String getNome() {
