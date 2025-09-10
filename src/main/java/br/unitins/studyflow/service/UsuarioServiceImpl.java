@@ -25,7 +25,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         novoUsuario.setNome(usuarioDTO.nome());
         novoUsuario.setEmail(usuarioDTO.email());
         novoUsuario.setDataNascimento(usuarioDTO.dataNascimento());
-        novoUsuario.setTipoPerfil(usuarioDTO.tipoPerfil());
+        novoUsuario.setPerfil(usuarioDTO.perfil());
 
         repository.persist(novoUsuario);
         return UsuarioResponseDTO.valueOf(novoUsuario);
@@ -58,7 +58,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setNome(usuarioDTO.nome());
         usuario.setEmail(usuarioDTO.email());
         usuario.setDataNascimento(usuarioDTO.dataNascimento());
-        usuario.setTipoPerfil(usuarioDTO.tipoPerfil());
+        usuario.setPerfil(usuarioDTO.perfil());
 
        
         repository.persist(usuario);

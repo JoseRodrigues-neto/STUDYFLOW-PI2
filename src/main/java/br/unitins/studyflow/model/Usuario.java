@@ -4,6 +4,8 @@ import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 
 @Entity
@@ -22,18 +24,19 @@ public class Usuario extends DefaultEntity  {
  
     @Column(name = "data_nascimento")
     private LocalDate dataNascimento;
-   
+    
+    @Enumerated(EnumType.STRING) 
     @Column(name = "tipo_perfil")
-    private String tipoPerfil;
+    private Perfil perfil;
 
     public Usuario() {
     }
 
-    public Usuario(String nome, String email,LocalDate dataNacimento, String tipoPerfil) {
+    public Usuario(String nome, String email,LocalDate dataNacimento, Perfil perfil) {
         this.nome = nome;
        this.dataNascimento = dataNacimento;
         this.email = email;
-        this.tipoPerfil = tipoPerfil;
+        this.perfil = perfil;
     } 
  
     public String getNome() {
@@ -62,12 +65,13 @@ public class Usuario extends DefaultEntity  {
     }
 
 
-    public String getTipoPerfil() {
-        return tipoPerfil;
+    public Perfil getPerfil() {
+        return perfil;
     }
+   
 
-    public void setTipoPerfil(String tipoPerfil) {
-        this.tipoPerfil = tipoPerfil;
+    public void setPerfil(Perfil perfil) {
+        this.perfil = perfil;
     }
 
     @Override
@@ -75,7 +79,7 @@ public class Usuario extends DefaultEntity  {
         return "Usuario{" +
                ", nome='" + nome + '\'' +
                ", email='" + email + '\'' +
-               ", tipoPerfil='" + tipoPerfil + '\'' +
+               ", perfil='" + perfil + '\'' +
                '}';
     }
 
