@@ -11,7 +11,7 @@ public class Roadmap extends DefaultEntity {
     private String nome;
     private String descricao;
     private String nota;
-
+    //a
     @ManyToOne
     private Atividade atividade;
 
