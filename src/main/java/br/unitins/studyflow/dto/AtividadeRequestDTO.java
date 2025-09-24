@@ -9,8 +9,8 @@ public record AtividadeRequestDTO (
     String descricao,
     LocalDate dataInicio,
     LocalDate dataFim,
-    StatusAtividade status
-    // Long roadmapId
+    StatusAtividade status,
+    Long roadmapId
 ) {
     
 }

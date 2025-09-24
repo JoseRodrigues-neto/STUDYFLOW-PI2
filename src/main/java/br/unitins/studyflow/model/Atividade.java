@@ -7,6 +7,8 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -26,6 +28,10 @@ public class Atividade extends DefaultEntity{
 
     @OneToMany(mappedBy = "atividade", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Anotacao> anotacoes;
+
+    @ManyToOne
+    @JoinColumn(name = "roadmap_id")
+    private Roadmap roadmap;
 
     public String getTitulo() {
         return titulo;
@@ -74,4 +80,13 @@ public class Atividade extends DefaultEntity{
     public void setAnotacoes(List<Anotacao> anotacoes) {
         this.anotacoes = anotacoes;
     }
+
+    public Roadmap getRoadmap() {
+        return roadmap;
+    }
+
+    public void setRoadmap(Roadmap roadmap) {
+        this.roadmap = roadmap;
+    }
+    
 }

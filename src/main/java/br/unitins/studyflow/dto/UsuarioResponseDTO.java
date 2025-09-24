@@ -2,6 +2,7 @@ package br.unitins.studyflow.dto;
 
 import java.time.LocalDate;
 
+import br.unitins.studyflow.model.Perfil;
 import br.unitins.studyflow.model.Usuario;
 
 public record UsuarioResponseDTO(
@@ -10,7 +11,7 @@ public record UsuarioResponseDTO(
     String nome,
     String email,
     LocalDate dataNascimento,
-    String tipoPerfil
+    Perfil perfil
 ) {
     public static UsuarioResponseDTO valueOf(Usuario usuario) {
         return new UsuarioResponseDTO(
@@ -19,7 +20,7 @@ public record UsuarioResponseDTO(
             usuario.getNome(),
             usuario.getEmail(),
             usuario.getDataNascimento(),
-            usuario.getTipoPerfil()
+            usuario.getPerfil()
         );
     }
 }

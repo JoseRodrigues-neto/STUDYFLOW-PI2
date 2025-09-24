@@ -12,4 +12,8 @@ public class AtividadeRepository implements PanacheRepository<Atividade>{
     public List<Atividade> findByTitulo(String titulo) {
         return find("SELECT a FROM Atividade a WHERE a.titulo like ?1", "%" + titulo + "%").list();
     }
+
+    public List<Atividade> findByRoadmap(Long roadmapId) {
+        return find("roadmap.id", roadmapId).list();
+    }
 }

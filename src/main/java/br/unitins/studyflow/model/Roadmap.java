@@ -2,8 +2,10 @@ package br.unitins.studyflow.model;
 
 import java.util.List;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -13,6 +15,9 @@ public class Roadmap extends DefaultEntity {
 
     private String nome;
     private String descricao;
+
+    @OneToMany(mappedBy = "roadmap", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Atividade> atividades;
     private String nota;
     
     @OneToMany
@@ -30,21 +35,10 @@ public class Roadmap extends DefaultEntity {
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
-    public String getNota() {
-        return nota;
+    public List<Atividade> getAtividades() {
+        return atividades;
     }
-    public void setNota(String nota) {
-        this.nota = nota;
+    public void setAtividades(List<Atividade> atividades) {
+        this.atividades = atividades;
     }
-    public List<Atividade> getAtividade() {
-        return atividade;
-    }
-    public void setAtividade(List<Atividade> atividade) {
-        this.atividade = atividade;
-    }
-
-
-
-
-
 }

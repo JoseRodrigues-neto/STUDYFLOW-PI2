@@ -1,7 +1,12 @@
 package br.unitins.studyflow.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 
 import br.unitins.studyflow.dto.UsuarioRequestDTO;
 import br.unitins.studyflow.dto.UsuarioResponseDTO;
@@ -25,9 +30,19 @@ public class UsuarioServiceImpl implements UsuarioService {
         novoUsuario.setNome(usuarioDTO.nome());
         novoUsuario.setEmail(usuarioDTO.email());
         novoUsuario.setDataNascimento(usuarioDTO.dataNascimento());
-        novoUsuario.setTipoPerfil(usuarioDTO.tipoPerfil());
+        novoUsuario.setPerfil(usuarioDTO.perfil());
 
         repository.persist(novoUsuario);
+
+            try {
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("groups", List.of(usuarioDTO.perfil().name())); 
+
+            FirebaseAuth.getInstance().setCustomUserClaims(uid, claims);
+        } catch (FirebaseAuthException e) {
+          
+            throw new RuntimeException("Erro ao definir o perfil do usuário no Firebase.", e);
+        }
         return UsuarioResponseDTO.valueOf(novoUsuario);
     }
 
@@ -58,7 +73,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setNome(usuarioDTO.nome());
         usuario.setEmail(usuarioDTO.email());
         usuario.setDataNascimento(usuarioDTO.dataNascimento());
-        usuario.setTipoPerfil(usuarioDTO.tipoPerfil());
+        usuario.setPerfil(usuarioDTO.perfil());
 
        
         repository.persist(usuario);
