@@ -1,7 +1,10 @@
 package br.unitins.studyflow.model;
 
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -11,9 +14,9 @@ public class Roadmap extends DefaultEntity {
     private String nome;
     private String descricao;
     private String nota;
-    //a
-    @ManyToOne
-    private Atividade atividade;
+    
+    @OneToMany
+    private List<Atividade> atividade;
 
     public String getNome() {
         return nome;
@@ -33,10 +36,10 @@ public class Roadmap extends DefaultEntity {
     public void setNota(String nota) {
         this.nota = nota;
     }
-    public Atividade getAtividade() {
+    public List<Atividade> getAtividade() {
         return atividade;
     }
-    public void setAtividade(Atividade atividade) {
+    public void setAtividade(List<Atividade> atividade) {
         this.atividade = atividade;
     }
 
