@@ -12,6 +12,8 @@ public interface AtividadeService {
 
     List<Atividade> findByTitulo(String titulo);
 
+    List<Atividade> findByRoadmap(Long roadmapId);
+
     List<Atividade> findAll();
 
     void delete(long id);
