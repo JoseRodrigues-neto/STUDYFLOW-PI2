@@ -10,7 +10,7 @@ public interface RoadmapService {
 
     Roadmap update (Long id, RoadmapRequestDTO RoadmapRequestDTO);
 
-    List<Roadmap> findByTitulo(String titulo);
+    Roadmap findByTitulo(String titulo);
 
     Roadmap findById(Long id);
 

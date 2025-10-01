@@ -73,7 +73,7 @@ public class RoadmapServiceImpl implements RoadmapService{
     }
 
     @Override
-    public List<Roadmap> findByTitulo(String titulo) {
+    public Roadmap findByTitulo(String titulo) {
         List<Roadmap> roadmaps = roadmapRepository.findByTitulo(titulo);
         if (roadmaps == null) {
             throw new IllegalArgumentException("Roadmap não encontrado");
@@ -81,7 +81,7 @@ public class RoadmapServiceImpl implements RoadmapService{
         if (roadmaps.isEmpty()) {
             throw new IllegalArgumentException("Roadmap não encontrado");
         }
-        return roadmaps;
+        return roadmaps.getFirst();
     }
 
     

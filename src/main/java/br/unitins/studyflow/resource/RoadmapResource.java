@@ -59,4 +59,10 @@ public class RoadmapResource {
         roadmapService.delete(id);
         return Response.noContent().build();
     }
+
+    @GET
+    @Path("/{titulo}")
+    public Response findById(@PathParam("titulo") String titulo) {
+        return Response.ok(RoadmapDTO.valueOf(roadmapService.findByTitulo(titulo))).build();
+    }
 }
