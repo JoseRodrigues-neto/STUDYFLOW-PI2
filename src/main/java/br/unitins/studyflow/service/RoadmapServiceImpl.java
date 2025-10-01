@@ -72,5 +72,17 @@ public class RoadmapServiceImpl implements RoadmapService{
         roadmapRepository.deleteById(id);
     }
 
+    @Override
+    public List<Roadmap> findByTitulo(String titulo) {
+        List<Roadmap> roadmaps = roadmapRepository.findByTitulo(titulo);
+        if (roadmaps == null) {
+            throw new IllegalArgumentException("Roadmap não encontrado");
+        }
+        if (roadmaps.isEmpty()) {
+            throw new IllegalArgumentException("Roadmap não encontrado");
+        }
+        return roadmaps;
+    }
+
     
 }
