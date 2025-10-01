@@ -6,13 +6,11 @@ import br.unitins.studyflow.dto.RoadmapRequestDTO;
 import br.unitins.studyflow.model.Roadmap;
 
 public interface RoadmapService {
-    Roadmap create (RoadmapRequestDTO RoadmapRequestDTO);
+    Roadmap create (RoadmapRequestDTO dto);
 
     Roadmap update (Long id, RoadmapRequestDTO RoadmapRequestDTO);
 
-    List<Roadmap> findByNome(String nome);
-
-    List<Roadmap> findById(Long roadmapId);
+    Roadmap findById(Long id);
 
     List<Roadmap> findAll();
 

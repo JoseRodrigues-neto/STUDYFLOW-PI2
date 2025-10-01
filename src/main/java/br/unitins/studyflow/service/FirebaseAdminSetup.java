@@ -19,7 +19,7 @@ public class FirebaseAdminSetup {
         try {
             // mudar isso no futuro para variavel de ambiente
             FileInputStream serviceAccount = new FileInputStream("C:\\key-firebase\\studyflow-pi-firebase-adminsdk-fbsvc-07a7781669.json");
-
+                                                                 
             FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                 .build();
