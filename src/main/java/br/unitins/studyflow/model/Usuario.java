@@ -1,11 +1,14 @@
 package br.unitins.studyflow.model;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -28,6 +31,9 @@ public class Usuario extends DefaultEntity  {
     @Enumerated(EnumType.STRING) 
     @Column(name = "tipo_perfil")
     private Perfil perfil;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Roadmap> roadmaps;
 
     public Usuario() {
     }
@@ -89,6 +95,14 @@ public class Usuario extends DefaultEntity  {
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public List<Roadmap> getRoadmaps() {
+        return roadmaps;
+    }
+
+    public void setRoadmaps(List<Roadmap> roadmaps) {
+        this.roadmaps = roadmaps;
     }
 
   

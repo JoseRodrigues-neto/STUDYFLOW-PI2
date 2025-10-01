@@ -1,9 +1,9 @@
 package br.unitins.studyflow.dto;
 
 public record RoadmapRequestDTO(
-    String nome,
+    String titulo,
     String descricao,
-    Long atividadeId
+    Long usuarioId
 ) {
     
 }

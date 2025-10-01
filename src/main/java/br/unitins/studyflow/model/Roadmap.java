@@ -4,6 +4,8 @@ import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -11,17 +13,21 @@ import jakarta.persistence.Table;
 @Table(name = "roadmap")
 public class Roadmap extends DefaultEntity {
 
-    private String nome;
+    private String titulo;
     private String descricao;
 
     @OneToMany(mappedBy = "roadmap", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Atividade> atividades;
 
-    public String getNome() {
-        return nome;
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
+
+    public String getTitulo() {
+        return titulo;
     }
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
     }
     public String getDescricao() {
         return descricao;
@@ -34,5 +40,11 @@ public class Roadmap extends DefaultEntity {
     }
     public void setAtividades(List<Atividade> atividades) {
         this.atividades = atividades;
+    }
+    public Usuario getUsuario() {
+        return usuario;
+    }
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 }
