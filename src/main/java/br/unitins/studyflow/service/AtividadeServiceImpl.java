@@ -4,8 +4,10 @@ import java.util.List;
 
 import br.unitins.studyflow.dto.AtividadeRequestDTO;
 import br.unitins.studyflow.model.Atividade;
+import br.unitins.studyflow.model.Roadmap;
 import br.unitins.studyflow.model.StatusAtividade;
 import br.unitins.studyflow.repository.AtividadeRepository;
+import br.unitins.studyflow.repository.RoadmapRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -15,6 +17,9 @@ public class AtividadeServiceImpl implements AtividadeService {
 
     @Inject
     AtividadeRepository atividadeRepository;
+
+    @Inject
+    RoadmapRepository roadmapRepository;
 
     @Override
     public List<Atividade> findAll() {
@@ -27,6 +32,11 @@ public class AtividadeServiceImpl implements AtividadeService {
     }
 
     @Override
+    public List<Atividade> findByRoadmap(Long roadmapId) {
+        return atividadeRepository.findByRoadmap(roadmapId);
+    }
+
+    @Override
     @Transactional
     public Atividade create(AtividadeRequestDTO atividadeRequestDTO) {
 
@@ -36,6 +46,12 @@ public class AtividadeServiceImpl implements AtividadeService {
         atividade.setDataInicio(atividadeRequestDTO.dataInicio());
         atividade.setDataFim(atividadeRequestDTO.dataFim());
         atividade.setStatus(StatusAtividade.PENDENTE);
+
+        Roadmap roadmap = roadmapRepository.findById(atividadeRequestDTO.roadmapId());
+        if (roadmap == null) {
+            throw new RuntimeException("Roadmap não encontrado!");
+        }
+        atividade.setRoadmap(roadmap);
 
         atividadeRepository.persist(atividade);
         return atividade;

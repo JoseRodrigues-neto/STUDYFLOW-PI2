@@ -10,10 +10,10 @@ public class DashboardRepository implements PanacheRepository<Atividade> {
 
    public long countByStatusAndUsuario(StatusAtividade status, Long usuarioId) {
 
-        return count("status = ?1 and roadmap in (select r from Roadmap r join r.usuarios u where u.id = ?2)", status, usuarioId);
+        return count("status = ?1 and roadmap in (select r from Roadmap r join r.usuario u where u.id = ?2)", status, usuarioId);
     }
 
     public long countByUsuario(Long usuarioId) {
-        return count("roadmap in (select r from Roadmap r join r.usuarios u where u.id = ?1)", usuarioId);
+        return count("roadmap in (select r from Roadmap r join r.usuario u where u.id = ?1)", usuarioId);
     }
 }

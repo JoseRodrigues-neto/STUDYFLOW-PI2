@@ -4,10 +4,8 @@ import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -15,24 +13,21 @@ import jakarta.persistence.Table;
 @Table(name = "roadmap")
 public class Roadmap extends DefaultEntity {
 
-    private String nome;
+    private String titulo;
     private String descricao;
-    private String nota;
 
-     @OneToMany(mappedBy = "roadmap", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "roadmap", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Atividade> atividades;
 
-     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "roadmap_usuario",  
-               joinColumns = @JoinColumn(name = "roadmap_id"),  
-               inverseJoinColumns = @JoinColumn(name = "usuario_id"))  
-    private List<Usuario> usuarios;
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
 
-    public String getNome() {
-        return nome;
+    public String getTitulo() {
+        return titulo;
     }
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
     }
     public String getDescricao() {
         return descricao;
@@ -40,27 +35,16 @@ public class Roadmap extends DefaultEntity {
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
-    public String getNota() {
-        return nota;
-    }
-    public void setNota(String nota) {
-        this.nota = nota;
-    }
     public List<Atividade> getAtividades() {
         return atividades;
     }
     public void setAtividades(List<Atividade> atividades) {
         this.atividades = atividades;
     }
-    public List<Usuario> getUsuarios() {
-        return usuarios;
+    public Usuario getUsuario() {
+        return usuario;
     }
-    public void setUsuarios(List<Usuario> usuarios) {
-        this.usuarios = usuarios;
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
-   
-
-
-
-
 }

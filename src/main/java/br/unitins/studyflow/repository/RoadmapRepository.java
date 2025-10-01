@@ -9,7 +9,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class RoadmapRepository implements PanacheRepository<Roadmap>{
 
-    public List<Roadmap> findByNome(String nome) {
-        return find("SELECT a FROM Roadmap a WHERE a.nome like ?1", "%" + nome + "%").list();
+    public List<Roadmap> findByTitulo(String titulo) {
+        return find("SELECT a FROM Roadmap a WHERE a.titulo like ?1", "%" + titulo + "%").list();
     }
 }
