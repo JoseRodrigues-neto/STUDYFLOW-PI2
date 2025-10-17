@@ -15,6 +15,6 @@ public interface UsuarioService {
     
     public UsuarioResponseDTO atualizar(String uid, UsuarioRequestDTO usuarioDTO);
     
-    public boolean excluir(String uid);
+    public void excluir(String uid);
     
 }

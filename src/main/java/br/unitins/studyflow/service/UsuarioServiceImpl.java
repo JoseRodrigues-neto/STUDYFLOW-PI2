@@ -80,9 +80,25 @@ public class UsuarioServiceImpl implements UsuarioService {
         return UsuarioResponseDTO.valueOf(usuario);
     }
 
-    @Transactional
-    @Override
-    public boolean excluir(String uid) {
-        return repository.delete("uid", uid) > 0;
+@Transactional
+@Override
+public void excluir(String uid) {  
+    
+    
+    if (uid == null || uid.isBlank()) {
+        throw new IllegalArgumentException("UID do usuário não pode ser nulo ou vazio para exclusão.");
     }
+
+    try {  
+        FirebaseAuth.getInstance().deleteUser(uid);
+
+        long count = repository.delete("uid", uid);
+        if (count == 0) {
+            System.out.println("Aviso: Usuário com UID " + uid + " foi deletado do Firebase, mas não foi encontrado no banco de dados local.");
+        }
+
+    } catch (FirebaseAuthException e) {
+        throw new RuntimeException("Erro ao deletar o usuário no Firebase. A operação foi cancelada.", e);
+    }
+}
 }

@@ -88,20 +88,24 @@ public class UsuarioResource {
                                          : Response.status(Status.NOT_FOUND).build();
     }
 
-    @DELETE
-    @Path("/{uid}")
-    @RolesAllowed({"ALUNO", "PROFESSOR"})
-    public Response excluir(@PathParam("uid") String uid) {
-        String uidToken = jwt.getSubject();
+@DELETE
+    @Path("/me")
+    @RolesAllowed({"ALUNO", "PROFESSOR"}) 
+    public Response deleteSelf() {
+        
+        String uid = jwt.getSubject();
+        try {
+       
+            service.excluir(uid);
+            return Response.status(Status.NO_CONTENT).build();
 
-         
-        if (jwt.getGroups().contains("ALUNO") && !uid.equals(uidToken)) {
-            return Response.status(Status.FORBIDDEN)
-                    .entity("Acesso negado. Alunos só podem excluir o próprio perfil.").build();
+        } catch (Exception e) {
+     
+            e.printStackTrace(); 
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                           .entity("Erro ao processar a exclusão da conta.")
+                           .build();
         }
-
-        boolean sucesso = service.excluir(uid);
-        return sucesso ? Response.status(Status.NO_CONTENT).build()
-                       : Response.status(Status.NOT_FOUND).build();
     }
+
 }
