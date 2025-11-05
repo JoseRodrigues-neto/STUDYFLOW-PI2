@@ -1,3 +1,6 @@
+INSERT INTO usuario(uid, nome, email, data_nascimento, tipo_perfil) 
+VALUES('testeFirebaseUID123', 'teste da Silva', 'teste@email.com', '2002-05-15', 'ALUNO');
+
 -- Novo Roadmap para a Ana (usuario_id = 1)
 INSERT INTO roadmap(id, titulo, descricao) VALUES(1, 'Introdução à Programação com Java', 'Roadmap para aprender os conceitos básicos de Java, desde a sintaxe até a orientação a objetos.');
 
@@ -13,8 +16,9 @@ INSERT INTO anotacao(id, conteudo, atividade_id) VALUES(1, 'Lembrar do teorema d
 INSERT INTO anotacao(id, conteudo, atividade_id) VALUES(2, 'Revisar a regra da cadeia antes de começar os exercícios.', 2);
 INSERT INTO anotacao(id, conteudo, atividade_id) VALUES(3, 'Os exercícios 9 e 10 são os mais difíceis, pedir ajuda se necessário.', 2);
 
+ALTER SEQUENCE usuario_id_seq RESTART WITH 2;
 ALTER SEQUENCE roadmap_id_seq RESTART WITH 2;
 ALTER SEQUENCE atividade_id_seq RESTART WITH 4;
 ALTER SEQUENCE anotacao_id_seq RESTART WITH 4;
 
-INSERT INTO usuario(id, uid, nome, email, data_nascimento, tipo_perfil) VALUES(1, 'testeFirebaseUID123', 'teste da Silva', 'teste@email.com', '2002-05-15', 'ALUNO');
+-- INSERT INTO usuario(id, uid, nome, email, data_nascimento, tipo_perfil) VALUES(1, 'testeFirebaseUID123', 'teste da Silva', 'teste@email.com', '2002-05-15', 'ALUNO');
