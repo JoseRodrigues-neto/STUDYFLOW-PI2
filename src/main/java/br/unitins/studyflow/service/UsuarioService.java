@@ -15,6 +15,8 @@ public interface UsuarioService {
     
     public UsuarioResponseDTO atualizar(String uid, UsuarioRequestDTO usuarioDTO);
     
-    public boolean excluir(String uid);
+    public void excluir(String uid);
+
+    public UsuarioResponseDTO atualizarAvatar(String uid, String urlDaImagem);
     
 }

@@ -13,12 +13,15 @@ import br.unitins.studyflow.dto.UsuarioResponseDTO;
 import br.unitins.studyflow.service.UsuarioService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
@@ -54,6 +57,14 @@ public class UsuarioResource {
     public List<UsuarioResponseDTO> buscarTodos() {
         return service.buscarTodos();
     }
+    @GET
+    @Path("/me") 
+    @RolesAllowed({"ALUNO", "PROFESSOR"}) 
+    public Response buscarMeuPerfil() {
+        String uidToken = jwt.getSubject();
+        UsuarioResponseDTO usuario = service.buscarPorId(uidToken); 
+        return usuario != null ? Response.ok(usuario).build() : Response.status(Status.NOT_FOUND).build();
+    }
 
     @GET
     @Path("/{uid}")
@@ -88,20 +99,42 @@ public class UsuarioResource {
                                          : Response.status(Status.NOT_FOUND).build();
     }
 
-    @DELETE
-    @Path("/{uid}")
-    @RolesAllowed({"ALUNO", "PROFESSOR"})
-    public Response excluir(@PathParam("uid") String uid) {
-        String uidToken = jwt.getSubject();
+@DELETE
+    @Path("/me")
+    @RolesAllowed({"ALUNO", "PROFESSOR"}) 
+    public Response deleteSelf() {
+        
+        String uid = jwt.getSubject();
+        try {
+       
+            service.excluir(uid);
+            return Response.status(Status.NO_CONTENT).build();
 
-         
-        if (jwt.getGroups().contains("ALUNO") && !uid.equals(uidToken)) {
-            return Response.status(Status.FORBIDDEN)
-                    .entity("Acesso negado. Alunos só podem excluir o próprio perfil.").build();
+        } catch (Exception e) {
+     
+            e.printStackTrace(); 
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                           .entity("Erro ao processar a exclusão da conta.")
+                           .build();
         }
+    }
+@PUT 
+    @Path("/avatar") // Rota: /usuarios/avatar
+    @Consumes(MediaType.TEXT_PLAIN) // Espera apenas um texto (a URL)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"ALUNO", "PROFESSOR"})
+    public Response salvarAvatarUrl(String avatarUrl) { // Recebe a URL como String
+        
+        String uid = jwt.getSubject();
 
-        boolean sucesso = service.excluir(uid);
-        return sucesso ? Response.status(Status.NO_CONTENT).build()
-                       : Response.status(Status.NOT_FOUND).build();
+        // Manda o service salvar esta URL no banco
+        UsuarioResponseDTO usuarioAtualizado = service.atualizarAvatar(uid, avatarUrl);
+
+        if (usuarioAtualizado == null) {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+        
+        // Retorna o usuário com a nova foto
+        return Response.ok(usuarioAtualizado).build();
     }
 }
