@@ -11,7 +11,8 @@ public record UsuarioResponseDTO(
     String nome,
     String email,
     LocalDate dataNascimento,
-    Perfil perfil
+    Perfil perfil,
+    String avatarUrl
 ) {
     public static UsuarioResponseDTO valueOf(Usuario usuario) {
         return new UsuarioResponseDTO(
@@ -20,7 +21,8 @@ public record UsuarioResponseDTO(
             usuario.getNome(),
             usuario.getEmail(),
             usuario.getDataNascimento(),
-            usuario.getPerfil()
+            usuario.getPerfil(),
+            usuario.getAvatarUrl() 
         );
     }
 }

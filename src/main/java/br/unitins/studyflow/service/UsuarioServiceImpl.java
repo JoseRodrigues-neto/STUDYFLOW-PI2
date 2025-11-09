@@ -101,4 +101,19 @@ public void excluir(String uid) {
         throw new RuntimeException("Erro ao deletar o usuário no Firebase. A operação foi cancelada.", e);
     }
 }
+
+@Transactional
+    @Override
+    public UsuarioResponseDTO atualizarAvatar(String uid, String urlDaImagem) {
+        Usuario usuario = repository.find("uid", uid).firstResult();
+        if (usuario == null) {
+            return null; // Ou lançar exceção
+        }
+
+        // Simplesmente salva a URL completa do Firebase
+        usuario.setAvatarUrl(urlDaImagem); 
+        
+        repository.persist(usuario);
+        return UsuarioResponseDTO.valueOf(usuario);  
+    }
 }

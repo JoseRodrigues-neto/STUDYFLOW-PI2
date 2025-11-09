@@ -13,12 +13,15 @@ import br.unitins.studyflow.dto.UsuarioResponseDTO;
 import br.unitins.studyflow.service.UsuarioService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
@@ -53,6 +56,14 @@ public class UsuarioResource {
     @RolesAllowed("PROFESSOR")  
     public List<UsuarioResponseDTO> buscarTodos() {
         return service.buscarTodos();
+    }
+    @GET
+    @Path("/me") 
+    @RolesAllowed({"ALUNO", "PROFESSOR"}) 
+    public Response buscarMeuPerfil() {
+        String uidToken = jwt.getSubject();
+        UsuarioResponseDTO usuario = service.buscarPorId(uidToken); 
+        return usuario != null ? Response.ok(usuario).build() : Response.status(Status.NOT_FOUND).build();
     }
 
     @GET
@@ -107,5 +118,23 @@ public class UsuarioResource {
                            .build();
         }
     }
+@PUT 
+    @Path("/avatar") // Rota: /usuarios/avatar
+    @Consumes(MediaType.TEXT_PLAIN) // Espera apenas um texto (a URL)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"ALUNO", "PROFESSOR"})
+    public Response salvarAvatarUrl(String avatarUrl) { // Recebe a URL como String
+        
+        String uid = jwt.getSubject();
 
+        // Manda o service salvar esta URL no banco
+        UsuarioResponseDTO usuarioAtualizado = service.atualizarAvatar(uid, avatarUrl);
+
+        if (usuarioAtualizado == null) {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+        
+        // Retorna o usuário com a nova foto
+        return Response.ok(usuarioAtualizado).build();
+    }
 }
