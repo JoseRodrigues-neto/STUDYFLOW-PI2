@@ -2,6 +2,8 @@ package br.unitins.studyflow.service;
 
 import java.util.List;
 
+import jakarta.ws.rs.core.Response;
+
 import br.unitins.studyflow.dto.UsuarioRequestDTO;
 import br.unitins.studyflow.dto.UsuarioResponseDTO;
 
@@ -19,4 +21,5 @@ public interface UsuarioService {
 
     public UsuarioResponseDTO atualizarAvatar(String uid, String urlDaImagem);
     
+    public Response loginComGoogle(String idToken);
 }

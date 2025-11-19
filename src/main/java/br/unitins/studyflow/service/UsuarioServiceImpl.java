@@ -15,12 +15,50 @@ import br.unitins.studyflow.repository.UsuarioRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.Response;
+
+import com.google.firebase.auth.FirebaseToken;
 
 @ApplicationScoped
 public class UsuarioServiceImpl implements UsuarioService {
 
     @Inject
     UsuarioRepository repository;
+
+    @Override
+    @Transactional
+    public Response loginComGoogle(String idToken) {
+        try {
+            FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(idToken);
+            String uid = decodedToken.getUid();
+
+            Usuario usuario = repository.find("uid", uid).firstResult();
+
+            if (usuario != null) {
+                // Usuário existe
+                if (usuario.getPerfil() != null) {
+                    // Perfil já definido, login completo
+                    return Response.ok(Map.of("status", "COMPLETO")).build();
+                } else {
+                    // Perfil não definido
+                    return Response.ok(Map.of("status", "SELECIONAR_PERFIL")).build();
+                }
+            } else {
+                // Usuário não existe, criar novo
+                Usuario novoUsuario = new Usuario();
+                novoUsuario.setUid(uid);
+                novoUsuario.setNome(decodedToken.getName());
+                novoUsuario.setEmail(decodedToken.getEmail());
+                // Perfil fica nulo até ser selecionado
+
+                repository.persist(novoUsuario);
+
+                return Response.ok(Map.of("status", "SELECIONAR_PERFIL")).build();
+            }
+        } catch (FirebaseAuthException e) {
+            throw new RuntimeException("Token do Firebase inválido.", e);
+        }
+    }
 
     @Transactional
     @Override
@@ -30,19 +68,19 @@ public class UsuarioServiceImpl implements UsuarioService {
         novoUsuario.setNome(usuarioDTO.nome());
         novoUsuario.setEmail(usuarioDTO.email());
         novoUsuario.setDataNascimento(usuarioDTO.dataNascimento());
-        novoUsuario.setPerfil(usuarioDTO.perfil());
+        
+        if (usuarioDTO.perfil() != null) {
+            novoUsuario.setPerfil(usuarioDTO.perfil());
+            try {
+                Map<String, Object> claims = new HashMap<>();
+                claims.put("groups", List.of(usuarioDTO.perfil().name())); 
+                FirebaseAuth.getInstance().setCustomUserClaims(uid, claims);
+            } catch (FirebaseAuthException e) {
+                throw new RuntimeException("Erro ao definir o perfil do usuário no Firebase.", e);
+            }
+        }
 
         repository.persist(novoUsuario);
-
-            try {
-            Map<String, Object> claims = new HashMap<>();
-            claims.put("groups", List.of(usuarioDTO.perfil().name())); 
-
-            FirebaseAuth.getInstance().setCustomUserClaims(uid, claims);
-        } catch (FirebaseAuthException e) {
-          
-            throw new RuntimeException("Erro ao definir o perfil do usuário no Firebase.", e);
-        }
         return UsuarioResponseDTO.valueOf(novoUsuario);
     }
 
@@ -73,8 +111,21 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setNome(usuarioDTO.nome());
         usuario.setEmail(usuarioDTO.email());
         usuario.setDataNascimento(usuarioDTO.dataNascimento());
-        usuario.setPerfil(usuarioDTO.perfil());
 
+        if (usuarioDTO.avatarUrl() != null) {
+            usuario.setAvatarUrl(usuarioDTO.avatarUrl());
+        }
+        
+        if (usuarioDTO.perfil() != null && !usuarioDTO.perfil().equals(usuario.getPerfil())) {
+            usuario.setPerfil(usuarioDTO.perfil());
+            try {
+                Map<String, Object> claims = new HashMap<>();
+                claims.put("groups", List.of(usuarioDTO.perfil().name()));
+                FirebaseAuth.getInstance().setCustomUserClaims(uid, claims);
+            } catch (FirebaseAuthException e) {
+                throw new RuntimeException("Erro ao atualizar o perfil do usuário no Firebase.", e);
+            }
+        }
        
         repository.persist(usuario);
         return UsuarioResponseDTO.valueOf(usuario);

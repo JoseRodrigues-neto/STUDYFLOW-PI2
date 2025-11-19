@@ -8,6 +8,7 @@ public record  UsuarioRequestDTO (
        String nome,
     String email,
     LocalDate dataNascimento,
-    Perfil perfil
+    Perfil perfil,
+    String avatarUrl
 ) {
 }

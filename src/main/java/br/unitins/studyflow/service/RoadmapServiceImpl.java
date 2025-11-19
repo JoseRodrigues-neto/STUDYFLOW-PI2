@@ -1,8 +1,11 @@
 package br.unitins.studyflow.service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.eclipse.microprofile.jwt.JsonWebToken;
+
+import br.unitins.studyflow.dto.RoadmapDTO;
 import br.unitins.studyflow.dto.RoadmapRequestDTO;
 import br.unitins.studyflow.model.Roadmap;
 import br.unitins.studyflow.model.Usuario;
@@ -13,13 +16,16 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
-public class RoadmapServiceImpl implements RoadmapService{
-    
+public class RoadmapServiceImpl implements RoadmapService {
+
     @Inject
     RoadmapRepository roadmapRepository;
 
     @Inject
     UsuarioRepository usuarioRepository;
+
+    @Inject
+    JsonWebToken jwt;
 
     @Override
     public List<Roadmap> findAll() {
@@ -28,25 +34,45 @@ public class RoadmapServiceImpl implements RoadmapService{
 
     @Override
     public Roadmap findById(Long id) {
-        return roadmapRepository.findById(id);
+        Roadmap roadmap = roadmapRepository.findById(id);
+        if (roadmap != null) {
+            // Força o carregamento da descrição, caso seja lazy
+            roadmap.getDescricao();
+        }
+        return roadmap;
+    }
+
+    @Override
+    public List<RoadmapDTO> getRoadmaps() {
+        String uid = jwt.getSubject();
+        return roadmapRepository.listAll().stream()
+                .map(RoadmapDTO::valueOf)
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
     public Roadmap create(RoadmapRequestDTO dto) {
-        Usuario usuario = usuarioRepository.findById(dto.usuarioId());
-        if (usuario == null) {
-            throw new IllegalArgumentException("Usuário não encontrado");
-        }
-
         Roadmap roadmap = new Roadmap();
         roadmap.setTitulo(dto.titulo());
         roadmap.setDescricao(dto.descricao());
+
+        // --- CORREÇÃO AQUI ---
+        // Em vez de pegar o ID do DTO, pegamos o UID do Token
+        String uid = jwt.getSubject();
+
+        // Buscamos o usuário pelo UID do Firebase (que é garantido existir se o token
+        // for válido)
+        Usuario usuario = usuarioRepository.find("uid", uid).firstResult();
+
+        if (usuario == null) {
+            throw new RuntimeException("Usuário não encontrado. Faça login novamente.");
+        }
+
         roadmap.setUsuario(usuario);
-        roadmap.setAtividades(new ArrayList<>());
+        // ---------------------
 
         roadmapRepository.persist(roadmap);
-
         return roadmap;
     }
 
@@ -57,8 +83,8 @@ public class RoadmapServiceImpl implements RoadmapService{
         if (roadmap == null) {
             throw new IllegalArgumentException("Roadmap não encontrado");
         }
-    // pensar en outra solucao se possivel 
-               roadmap.getAtividades().size();
+        // pensar en outra solucao se possivel
+        roadmap.getAtividades().size();
 
         roadmap.setTitulo(dto.titulo());
         roadmap.setDescricao(dto.descricao());
@@ -72,5 +98,4 @@ public class RoadmapServiceImpl implements RoadmapService{
         roadmapRepository.deleteById(id);
     }
 
-    
 }

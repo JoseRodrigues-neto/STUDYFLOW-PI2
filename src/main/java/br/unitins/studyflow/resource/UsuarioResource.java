@@ -58,6 +58,30 @@ public class UsuarioResource {
         return service.buscarTodos();
     }
     @GET
+    @Path("/login")
+    public Response login() {
+        String uid = jwt.getSubject();
+        UsuarioResponseDTO usuario = service.buscarPorId(uid);
+
+        if (usuario != null) {
+            return Response.ok(usuario).build();
+        } else {
+            // Usuário não encontrado, vamos criá-lo
+            String nome = jwt.getClaim("name");
+            String email = jwt.getClaim("email");
+            String avatarUrl = jwt.getClaim("picture");
+
+            // Criando um DTO para usar o serviço de cadastro existente
+            UsuarioRequestDTO novoUsuarioDTO = new UsuarioRequestDTO(nome, email, null, null, avatarUrl);
+            
+            // Cadastrando o novo usuário através do serviço
+            UsuarioResponseDTO novoUsuario = service.cadastrar(uid, novoUsuarioDTO);
+            
+            return Response.ok(novoUsuario).build();
+        }
+    }
+
+    @GET
     @Path("/me") 
     @RolesAllowed({"ALUNO", "PROFESSOR"}) 
     public Response buscarMeuPerfil() {
@@ -84,14 +108,12 @@ public class UsuarioResource {
 
     @PUT
     @Path("/{uid}")
-    @RolesAllowed({"ALUNO", "PROFESSOR"})
     public Response atualizar(@PathParam("uid") String uid, UsuarioRequestDTO usuarioDTO) {
         String uidToken = jwt.getSubject();
 
-        
-        if (jwt.getGroups().contains("ALUNO") && !uid.equals(uidToken)) {
-            return Response.status(Status.FORBIDDEN)
-                    .entity("Acesso negado. Alunos só podem atualizar o próprio perfil.").build();
+        if (!uid.equals(uidToken)) {
+             return Response.status(Status.FORBIDDEN)
+                    .entity("Você só pode alterar o seu próprio perfil.").build();
         }
 
         UsuarioResponseDTO usuarioAtualizado = service.atualizar(uid, usuarioDTO);

@@ -1,7 +1,6 @@
 package br.unitins.studyflow.dto;
 
 import java.util.List;
-
 import br.unitins.studyflow.model.Roadmap;
 
 public record RoadmapDTO(
@@ -11,10 +10,12 @@ public record RoadmapDTO(
         List<AtividadeDTO> atividades
 ) {
     public static RoadmapDTO valueOf(Roadmap roadmap) {
-        List<AtividadeDTO> dtoList = roadmap.getAtividades()
-                .stream()
-                .map(AtividadeDTO::valueOf)
-                .toList();
+        List<AtividadeDTO> dtoList = (roadmap.getAtividades() == null)
+                ? List.of() // Se for null, devolve lista vazia
+                : roadmap.getAtividades()
+                    .stream()
+                    .map(AtividadeDTO::valueOf)
+                    .toList();
 
         return new RoadmapDTO(
                 roadmap.getId(),
