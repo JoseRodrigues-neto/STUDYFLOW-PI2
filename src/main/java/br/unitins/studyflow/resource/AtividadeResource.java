@@ -32,12 +32,9 @@ public class AtividadeResource {
     AnotacaoService anotacaoService;
 
     @GET
-    public Response findAll() {
-        return Response.ok(atividadeService.findAll()
-                .stream()
-                .map(AtividadeDTO::valueOf)
-                .toList())
-                .build();
+    @Path("/{id}")
+    public Response findById(@PathParam("id") Long id) {
+        return Response.ok(AtividadeDTO.valueOf(atividadeService.findById(id))).build();
     }
 
     @GET
@@ -50,7 +47,8 @@ public class AtividadeResource {
     }
 
     @GET
-    public Response findByRoadmap(@QueryParam("roadmapId") Long roadmapId) {
+    @Path("/roadmap/{roadmapId}")
+    public Response findByRoadmap(@PathParam("roadmapId") Long roadmapId) {
         if (roadmapId == null) {
             return Response.status(Status.BAD_REQUEST)
                     .entity("O parâmetro 'roadmapId' é obrigatório.")

@@ -10,6 +10,8 @@ public interface AtividadeService {
 
     Atividade update (Long id, AtividadeRequestDTO atividadeRequestDTO);
 
+    Atividade findById(Long id);
+
     List<Atividade> findByTitulo(String titulo);
 
     List<Atividade> findByRoadmap(Long roadmapId);

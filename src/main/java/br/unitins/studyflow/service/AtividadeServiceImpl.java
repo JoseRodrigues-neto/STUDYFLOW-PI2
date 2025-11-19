@@ -72,6 +72,11 @@ public class AtividadeServiceImpl implements AtividadeService {
     }
 
     @Override
+    public Atividade findById(Long id) {
+        return atividadeRepository.findById(id);
+    }
+
+    @Override
     @Transactional
     public void delete(long id) {
         atividadeRepository.deleteById(id);
