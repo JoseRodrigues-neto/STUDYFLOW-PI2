@@ -131,29 +131,45 @@ public class UsuarioServiceImpl implements UsuarioService {
         return UsuarioResponseDTO.valueOf(usuario);
     }
 
-@Transactional
-@Override
-public void excluir(String uid) {  
-    
-    
-    if (uid == null || uid.isBlank()) {
-        throw new IllegalArgumentException("UID do usuário não pode ser nulo ou vazio para exclusão.");
-    }
-
-    try {  
-        FirebaseAuth.getInstance().deleteUser(uid);
-
-        long count = repository.delete("uid", uid);
-        if (count == 0) {
-            System.out.println("Aviso: Usuário com UID " + uid + " foi deletado do Firebase, mas não foi encontrado no banco de dados local.");
+    @Transactional
+    @Override
+    public void excluir(String uid) {
+        if (uid == null || uid.isBlank()) {
+            throw new IllegalArgumentException("UID do usuário não pode ser nulo ou vazio para exclusão.");
         }
 
-    } catch (FirebaseAuthException e) {
-        throw new RuntimeException("Erro ao deletar o usuário no Firebase. A operação foi cancelada.", e);
-    }
-}
+        // 1. Tenta deletar do banco de dados local
+        long count = repository.delete("uid", uid);
 
-@Transactional
+        if (count == 0) {
+            System.out.println("Aviso: Usuário com UID " + uid + " não encontrado no banco de dados local. Verificando o Firebase...");
+            // Se não encontrou localmente, podemos tentar apagar do Firebase apenas para garantir,
+            // mas não vamos gerar erro se já não existir lá.
+            try {
+                FirebaseAuth.getInstance().deleteUser(uid);
+                System.out.println("Usuário com UID " + uid + " deletado do Firebase, mas não estava no banco de dados local.");
+            } catch (FirebaseAuthException e) {
+                if (e.getErrorCode().equals("user-not-found")) {
+                    System.out.println("Usuário com UID " + uid + " não encontrado no Firebase, nenhuma ação necessária.");
+                } else {
+                    System.err.println("Erro inesperado ao deletar o usuário no Firebase (UID: " + uid + ") que não estava no banco de dados local. Erro: " + e.getMessage());
+                    throw new RuntimeException("Erro ao tentar garantir a exclusão no Firebase. " + e.getMessage(), e);
+                }
+            }
+        } else { // Usuário encontrado e deletado localmente
+            try {
+                FirebaseAuth.getInstance().deleteUser(uid); // Delete from Firebase
+                System.out.println("Usuário com UID " + uid + " deletado com sucesso do banco de dados local e do Firebase.");
+            } catch (FirebaseAuthException e) {
+                // Se o Firebase falhar, a transação JPA será automaticamente revertida (rollback)
+                // devido ao @Transactional, mantendo o usuário no banco de dados local também.
+                System.err.println("Erro ao deletar o usuário no Firebase (UID: " + uid + "). A transação local será revertida. Erro: " + e.getMessage());
+                throw new RuntimeException("Erro ao deletar o usuário no Firebase. A operação de exclusão completa foi abortada.", e);
+            }
+        }
+    }
+
+    @Transactional
     @Override
     public UsuarioResponseDTO atualizarAvatar(String uid, String urlDaImagem) {
         Usuario usuario = repository.find("uid", uid).firstResult();
