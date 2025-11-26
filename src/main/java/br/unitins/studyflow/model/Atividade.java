@@ -29,9 +29,13 @@ public class Atividade extends DefaultEntity{
     @OneToMany(mappedBy = "atividade", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Anotacao> anotacoes;
 
-    @ManyToOne
+    @ManyToOne(optional = true)
     @JoinColumn(name = "roadmap_id")
     private Roadmap roadmap;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
 
     public String getTitulo() {
         return titulo;
@@ -88,5 +92,13 @@ public class Atividade extends DefaultEntity{
     public void setRoadmap(Roadmap roadmap) {
         this.roadmap = roadmap;
     }
-    
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+     
 }

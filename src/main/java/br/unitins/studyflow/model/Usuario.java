@@ -35,8 +35,12 @@ public class Usuario extends DefaultEntity  {
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Roadmap> roadmaps;
 
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Atividade> atividades;
+
     @Column(name = "avatar_url", length = 500)
     private String avatarUrl;
+
 
 
     public Usuario() {
@@ -107,6 +111,14 @@ public class Usuario extends DefaultEntity  {
 
     public void setRoadmaps(List<Roadmap> roadmaps) {
         this.roadmaps = roadmaps;
+    }
+
+    public List<Atividade> getAtividades() {
+        return atividades;
+    }
+
+    public void setAtividades(List<Atividade> atividades) {
+        this.atividades = atividades;
     }
 
     public String getAvatarUrl() {

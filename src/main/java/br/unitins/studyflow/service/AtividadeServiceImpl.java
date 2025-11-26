@@ -12,6 +12,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
+
+import br.unitins.studyflow.model.Usuario;
+import br.unitins.studyflow.repository.UsuarioRepository;
+
 @ApplicationScoped
 public class AtividadeServiceImpl implements AtividadeService {
 
@@ -20,6 +24,9 @@ public class AtividadeServiceImpl implements AtividadeService {
 
     @Inject
     RoadmapRepository roadmapRepository;
+
+    @Inject
+    UsuarioRepository usuarioRepository;
 
     @Override
     public List<Atividade> findAll() {
@@ -32,8 +39,18 @@ public class AtividadeServiceImpl implements AtividadeService {
     }
 
     @Override
-    public List<Atividade> findByRoadmap(Long roadmapId) {
-        return atividadeRepository.findByRoadmap(roadmapId);
+    public List<Atividade> findByRoadmap(Long roadmapId, List<StatusAtividade> status) {
+        return atividadeRepository.findByRoadmap(roadmapId, status);
+    }
+
+    @Override
+    public List<Atividade> findByUsuarioAndRoadmapIsNull(Long usuarioId, List<StatusAtividade> status) {
+        return atividadeRepository.findByUsuarioAndRoadmapIsNull(usuarioId, status);
+    }
+
+    @Override
+    public List<Atividade> findAllByUsuarioAndStatusIn(Long usuarioId, List<StatusAtividade> status) {
+        return atividadeRepository.findAllByUsuarioAndStatusIn(usuarioId, status);
     }
 
     @Override
@@ -45,13 +62,27 @@ public class AtividadeServiceImpl implements AtividadeService {
         atividade.setDescricao(atividadeRequestDTO.descricao());
         atividade.setDataInicio(atividadeRequestDTO.dataInicio());
         atividade.setDataFim(atividadeRequestDTO.dataFim());
-        atividade.setStatus(StatusAtividade.PENDENTE);
+        atividade.setStatus(atividadeRequestDTO.status());
 
-        Roadmap roadmap = roadmapRepository.findById(atividadeRequestDTO.roadmapId());
-        if (roadmap == null) {
-            throw new RuntimeException("Roadmap não encontrado!");
+        // A atividade deve sempre ter um usuário associado.
+        if (atividadeRequestDTO.usuarioId() == null) {
+            throw new RuntimeException("O ID do usuário é obrigatório para criar uma atividade.");
         }
-        atividade.setRoadmap(roadmap);
+        Usuario usuario = usuarioRepository.findById(atividadeRequestDTO.usuarioId());
+        if (usuario == null) {
+            throw new RuntimeException("Usuário com ID " + atividadeRequestDTO.usuarioId() + " não encontrado.");
+        }
+        atividade.setUsuario(usuario);
+
+        // Se um roadmapId for fornecido, associa o roadmap.
+        if (atividadeRequestDTO.roadmapId() != null) {
+            Roadmap roadmap = roadmapRepository.findById(atividadeRequestDTO.roadmapId());
+            if (roadmap == null) {
+                // Considerar lançar uma exceção mais específica, como NotFoundException
+                throw new RuntimeException("Roadmap com ID " + atividadeRequestDTO.roadmapId() + " não encontrado.");
+            }
+            atividade.setRoadmap(roadmap);
+        }
 
         atividadeRepository.persist(atividade);
         return atividade;
@@ -67,6 +98,18 @@ public class AtividadeServiceImpl implements AtividadeService {
         atividade.setDataInicio(atividadeRequestDTO.dataInicio());
         atividade.setDataFim(atividadeRequestDTO.dataFim());
         atividade.setStatus(atividadeRequestDTO.status());
+
+        // Se um roadmapId for fornecido, associa o roadmap.
+        if (atividadeRequestDTO.roadmapId() != null) {
+            Roadmap roadmap = roadmapRepository.findById(atividadeRequestDTO.roadmapId());
+            if (roadmap == null) {
+                // Considerar lançar uma exceção mais específica, como NotFoundException
+                throw new RuntimeException("Roadmap com ID " + atividadeRequestDTO.roadmapId() + " não encontrado.");
+            }
+            atividade.setRoadmap(roadmap);
+        } else {
+            atividade.setRoadmap(null);
+        }
 
         return atividade;
     }

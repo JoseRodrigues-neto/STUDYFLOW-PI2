@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.unitins.studyflow.dto.AtividadeRequestDTO;
 import br.unitins.studyflow.model.Atividade;
+import br.unitins.studyflow.model.StatusAtividade;
 
 public interface AtividadeService {
     Atividade create (AtividadeRequestDTO atividadeRequestDTO);
@@ -14,7 +15,11 @@ public interface AtividadeService {
 
     List<Atividade> findByTitulo(String titulo);
 
-    List<Atividade> findByRoadmap(Long roadmapId);
+    List<Atividade> findByRoadmap(Long roadmapId, List<StatusAtividade> status);
+
+    List<Atividade> findByUsuarioAndRoadmapIsNull(Long usuarioId, List<StatusAtividade> status);
+
+    List<Atividade> findAllByUsuarioAndStatusIn(Long usuarioId, List<StatusAtividade> status);
 
     List<Atividade> findAll();
 

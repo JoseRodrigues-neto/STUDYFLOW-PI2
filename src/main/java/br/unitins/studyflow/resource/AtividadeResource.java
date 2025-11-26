@@ -3,6 +3,7 @@ package br.unitins.studyflow.resource;
 import br.unitins.studyflow.dto.AnotacaoDTO;
 import br.unitins.studyflow.dto.AtividadeDTO;
 import br.unitins.studyflow.dto.AtividadeRequestDTO;
+import br.unitins.studyflow.model.StatusAtividade;
 import br.unitins.studyflow.service.AnotacaoService;
 import br.unitins.studyflow.service.AtividadeService;
 import jakarta.inject.Inject;
@@ -19,6 +20,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+import java.util.List;
 
 @Path("/atividades")
 @Produces(MediaType.APPLICATION_JSON)
@@ -48,15 +50,60 @@ public class AtividadeResource {
 
     @GET
     @Path("/roadmap/{roadmapId}")
-    public Response findByRoadmap(@PathParam("roadmapId") Long roadmapId) {
+    public Response findByRoadmap(@PathParam("roadmapId") Long roadmapId, @QueryParam("status") List<String> statusNames) {
         if (roadmapId == null) {
             return Response.status(Status.BAD_REQUEST)
                     .entity("O parâmetro 'roadmapId' é obrigatório.")
                     .build();
         }
 
+        List<StatusAtividade> statusList = null;
+        if (statusNames != null && !statusNames.isEmpty()) {
+            statusList = statusNames.stream()
+                                    .map(StatusAtividade::valueOf)
+                                    .toList();
+        }
+
         return Response.ok(
-                atividadeService.findByRoadmap(roadmapId)
+                atividadeService.findByRoadmap(roadmapId, statusList)
+                        .stream()
+                        .map(AtividadeDTO::valueOf)
+                        .toList())
+                .build();
+    }
+
+    @GET
+    @Path("/diarias/{usuarioId}")
+    public Response findByUsuarioAndRoadmapIsNull(@PathParam("usuarioId") Long usuarioId, @QueryParam("status") List<String> statusNames) {
+        
+        List<StatusAtividade> statusList = null;
+        if (statusNames != null && !statusNames.isEmpty()) {
+            statusList = statusNames.stream()
+                                    .map(StatusAtividade::valueOf)
+                                    .toList();
+        }
+        
+        return Response.ok(
+                atividadeService.findByUsuarioAndRoadmapIsNull(usuarioId, statusList)
+                        .stream()
+                        .map(AtividadeDTO::valueOf)
+                        .toList())
+                .build();
+    }
+
+    @GET
+    @Path("/usuario/{usuarioId}")
+    public Response findAllByUsuario(@PathParam("usuarioId") Long usuarioId, @QueryParam("status") List<String> statusNames) {
+        
+        List<StatusAtividade> statusList = null;
+        if (statusNames != null && !statusNames.isEmpty()) {
+            statusList = statusNames.stream()
+                                    .map(StatusAtividade::valueOf)
+                                    .toList();
+        }
+        
+        return Response.ok(
+                atividadeService.findAllByUsuarioAndStatusIn(usuarioId, statusList)
                         .stream()
                         .map(AtividadeDTO::valueOf)
                         .toList())
