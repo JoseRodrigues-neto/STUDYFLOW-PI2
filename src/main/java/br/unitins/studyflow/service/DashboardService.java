@@ -4,5 +4,5 @@ import br.unitins.studyflow.dto.DashboardDTO;
 
 public interface DashboardService {
 
-    DashboardDTO getDashboardData(Long usuarioId);
+   public DashboardDTO getDashboardData(Long usuarioId);
 }
