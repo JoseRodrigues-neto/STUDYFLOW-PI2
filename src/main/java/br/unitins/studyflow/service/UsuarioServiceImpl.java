@@ -44,17 +44,34 @@ public class UsuarioServiceImpl implements UsuarioService {
                     return Response.ok(Map.of("status", "SELECIONAR_PERFIL")).build();
                 }
             } else {
-                // Usuário não existe, criar novo
-                Usuario novoUsuario = new Usuario();
-                novoUsuario.setUid(uid);
-                novoUsuario.setNome(decodedToken.getName());
-                novoUsuario.setEmail(decodedToken.getEmail());
-                // Perfil fica nulo até ser selecionado
-
-                repository.persist(novoUsuario);
-
-                return Response.ok(Map.of("status", "SELECIONAR_PERFIL")).build();
-            }
+                            // Usuário não existe pelo UID, vamos verificar pelo email para evitar duplicatas
+                            // e permitir a vinculação de contas (ex: usuário se cadastrou com email/senha antes)
+                            Usuario usuarioPorEmail = repository.find("email", decodedToken.getEmail()).firstResult();
+                
+                            if (usuarioPorEmail != null) {
+                                // Usuário com este email já existe. Vamos apenas atualizar o UID dele.
+                                // Isso vincula a conta do Google à conta existente de email/senha.
+                                usuarioPorEmail.setUid(uid);
+                                repository.persist(usuarioPorEmail); // 'persist' aqui funciona como um 'merge'
+                
+                                // Agora, verifica o perfil como se o tivéssemos encontrado pelo UID
+                                if (usuarioPorEmail.getPerfil() != null) {
+                                    return Response.ok(Map.of("status", "COMPLETO")).build();
+                                } else {
+                                    return Response.ok(Map.of("status", "SELECIONAR_PERFIL")).build();
+                                }
+                            } else {
+                                // Usuário realmente não existe. Criar novo.
+                                Usuario novoUsuario = new Usuario();
+                                novoUsuario.setUid(uid);
+                                novoUsuario.setNome(decodedToken.getName());
+                                novoUsuario.setEmail(decodedToken.getEmail());
+                                // Perfil fica nulo até ser selecionado
+                
+                                repository.persist(novoUsuario);
+                
+                                return Response.ok(Map.of("status", "SELECIONAR_PERFIL")).build();
+                            }            }
         } catch (FirebaseAuthException e) {
             throw new RuntimeException("Token do Firebase inválido.", e);
         }
@@ -109,7 +126,18 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
 
         usuario.setNome(usuarioDTO.nome());
-        usuario.setEmail(usuarioDTO.email());
+        // Verifica se o email foi alterado e se o novo email já existe
+        if (usuarioDTO.email() != null && !usuarioDTO.email().equals(usuario.getEmail())) {
+            Usuario existenteComNovoEmail = repository.find("email", usuarioDTO.email()).firstResult();
+            if (existenteComNovoEmail != null && !existenteComNovoEmail.getUid().equals(uid)) {
+                // Encontrou outro usuário com o novo email
+                throw new RuntimeException("Erro: O email '" + usuarioDTO.email() + "' já está em uso por outro usuário.");
+            }
+            usuario.setEmail(usuarioDTO.email());
+        } else {
+            // Mantém o email original se não for fornecido um novo
+            usuario.setEmail(usuario.getEmail());
+        }
         usuario.setDataNascimento(usuarioDTO.dataNascimento());
 
         if (usuarioDTO.avatarUrl() != null) {
