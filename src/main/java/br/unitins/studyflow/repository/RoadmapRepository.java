@@ -12,4 +12,8 @@ public class RoadmapRepository implements PanacheRepository<Roadmap>{
     public List<Roadmap> findByTitulo(String titulo) {
         return find("SELECT a FROM Roadmap a WHERE a.titulo like ?1", "%" + titulo + "%").list();
     }
+
+    public List<Roadmap> findByUsuario(Long usuarioId) {
+        return find("usuario.id", usuarioId).list();
+    }
 }

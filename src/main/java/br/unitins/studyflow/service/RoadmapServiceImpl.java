@@ -29,7 +29,12 @@ public class RoadmapServiceImpl implements RoadmapService {
 
     @Override
     public List<Roadmap> findAll() {
-        return roadmapRepository.findAll().list();
+        String uid = jwt.getSubject();
+        Usuario usuario = usuarioRepository.find("uid", uid).firstResult();
+        if (usuario == null) {
+            throw new RuntimeException("Usuário não encontrado.");
+        }
+        return roadmapRepository.findByUsuario(usuario.getId());
     }
 
     @Override

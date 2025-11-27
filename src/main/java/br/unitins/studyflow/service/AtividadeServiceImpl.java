@@ -55,7 +55,7 @@ public class AtividadeServiceImpl implements AtividadeService {
 
     @Override
     @Transactional
-    public Atividade create(AtividadeRequestDTO atividadeRequestDTO) {
+    public Atividade create(AtividadeRequestDTO atividadeRequestDTO, Long usuarioId) {
 
         Atividade atividade = new Atividade();
         atividade.setTitulo(atividadeRequestDTO.titulo());
@@ -65,12 +65,12 @@ public class AtividadeServiceImpl implements AtividadeService {
         atividade.setStatus(atividadeRequestDTO.status());
 
         // A atividade deve sempre ter um usuário associado.
-        if (atividadeRequestDTO.usuarioId() == null) {
+        if (usuarioId == null) {
             throw new RuntimeException("O ID do usuário é obrigatório para criar uma atividade.");
         }
-        Usuario usuario = usuarioRepository.findById(atividadeRequestDTO.usuarioId());
+        Usuario usuario = usuarioRepository.findById(usuarioId);
         if (usuario == null) {
-            throw new RuntimeException("Usuário com ID " + atividadeRequestDTO.usuarioId() + " não encontrado.");
+            throw new RuntimeException("Usuário com ID " + usuarioId + " não encontrado.");
         }
         atividade.setUsuario(usuario);
 

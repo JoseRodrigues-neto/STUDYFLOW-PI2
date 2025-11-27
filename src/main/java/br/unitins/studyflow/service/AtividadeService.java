@@ -7,7 +7,7 @@ import br.unitins.studyflow.model.Atividade;
 import br.unitins.studyflow.model.StatusAtividade;
 
 public interface AtividadeService {
-    Atividade create (AtividadeRequestDTO atividadeRequestDTO);
+    Atividade create (AtividadeRequestDTO atividadeRequestDTO, Long usuarioId);
 
     Atividade update (Long id, AtividadeRequestDTO atividadeRequestDTO);
 

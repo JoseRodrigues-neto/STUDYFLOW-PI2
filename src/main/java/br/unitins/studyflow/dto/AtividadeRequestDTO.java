@@ -10,8 +10,7 @@ public record AtividadeRequestDTO (
     LocalDate dataInicio,
     LocalDate dataFim,
     StatusAtividade status,
-    Long roadmapId,
-    Long usuarioId
+    Long roadmapId
 ) {
     
 }

@@ -22,6 +22,10 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import java.util.List;
 
+import br.unitins.studyflow.model.Usuario;
+import br.unitins.studyflow.repository.UsuarioRepository;
+import org.eclipse.microprofile.jwt.JsonWebToken;
+
 @Path("/atividades")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -32,6 +36,12 @@ public class AtividadeResource {
 
     @Inject
     AnotacaoService anotacaoService;
+
+    @Inject
+    JsonWebToken jwt;
+
+    @Inject
+    UsuarioRepository usuarioRepository;
 
     @GET
     @Path("/{id}")
@@ -73,9 +83,15 @@ public class AtividadeResource {
     }
 
     @GET
-    @Path("/diarias/{usuarioId}")
-    public Response findByUsuarioAndRoadmapIsNull(@PathParam("usuarioId") Long usuarioId, @QueryParam("status") List<String> statusNames) {
+    @Path("/diarias")
+    public Response findByUsuarioAndRoadmapIsNull(@QueryParam("status") List<String> statusNames) {
         
+        String uid = jwt.getSubject();
+        Usuario usuario = usuarioRepository.find("uid", uid).firstResult();
+        if (usuario == null) {
+            return Response.status(Status.NOT_FOUND).entity("Usuário não encontrado.").build();
+        }
+
         List<StatusAtividade> statusList = null;
         if (statusNames != null && !statusNames.isEmpty()) {
             statusList = statusNames.stream()
@@ -84,7 +100,7 @@ public class AtividadeResource {
         }
         
         return Response.ok(
-                atividadeService.findByUsuarioAndRoadmapIsNull(usuarioId, statusList)
+                atividadeService.findByUsuarioAndRoadmapIsNull(usuario.getId(), statusList)
                         .stream()
                         .map(AtividadeDTO::valueOf)
                         .toList())
@@ -92,9 +108,15 @@ public class AtividadeResource {
     }
 
     @GET
-    @Path("/usuario/{usuarioId}")
-    public Response findAllByUsuario(@PathParam("usuarioId") Long usuarioId, @QueryParam("status") List<String> statusNames) {
+    @Path("/usuario")
+    public Response findAllByUsuario(@QueryParam("status") List<String> statusNames) {
         
+        String uid = jwt.getSubject();
+        Usuario usuario = usuarioRepository.find("uid", uid).firstResult();
+        if (usuario == null) {
+            return Response.status(Status.NOT_FOUND).entity("Usuário não encontrado.").build();
+        }
+
         List<StatusAtividade> statusList = null;
         if (statusNames != null && !statusNames.isEmpty()) {
             statusList = statusNames.stream()
@@ -103,7 +125,7 @@ public class AtividadeResource {
         }
         
         return Response.ok(
-                atividadeService.findAllByUsuarioAndStatusIn(usuarioId, statusList)
+                atividadeService.findAllByUsuarioAndStatusIn(usuario.getId(), statusList)
                         .stream()
                         .map(AtividadeDTO::valueOf)
                         .toList())
@@ -124,8 +146,13 @@ public class AtividadeResource {
 
     @POST
     public Response create(@Valid AtividadeRequestDTO dto) {
+        String uid = jwt.getSubject();
+        Usuario usuario = usuarioRepository.find("uid", uid).firstResult();
+        if (usuario == null) {
+            return Response.status(Status.NOT_FOUND).entity("Usuário não encontrado.").build();
+        }
         return Response.status(Status.CREATED)
-                .entity(AtividadeDTO.valueOf(atividadeService.create(dto)))
+                .entity(AtividadeDTO.valueOf(atividadeService.create(dto, usuario.getId())))
                 .build();
     }
 
